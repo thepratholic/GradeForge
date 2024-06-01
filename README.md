@@ -25,14 +25,14 @@ Detailed Output:
 Provides a summary of the total SPI, CPI, and CGPA for the entered semesters.
 
 How to Use:
-1) Clone the repository to your local machine.
-   git clone https://github.com/yourusername/gradeforge.git
+1) Clone the repository to your local machine.<br>
+   git clone https://github.com/PrathamChelaramani/gradeforge.git
 
-2)Navigate to the project directory.
-  cd gradeforge
+2)Navigate to the project directory : 
+     cd gradeforge
 
-3)Run the script.
-  python gradeforge.py
+3)Run the script : 
+     python gradeforge.py
 
 
 Contribution
