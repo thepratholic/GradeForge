@@ -1,44 +1,56 @@
 # GradeForge
 
-Welcome to Gradeforge, a Python application designed to calculate and display your academic performance in engineering courses.
+Welcome to GradeForge, a web application designed to help engineering students calculate their SPI, CPI, and CGPA easily. This project uses Flask for the backend and HTML, CSS, and JavaScript for the frontend.
 
-Features_
-Specialization Selection:
-Supports both Diploma in Engineering (DE) and Bachelors of Engineering (BE) programs.
+## Features
+- Calculate SPI, CPI, and CGPA for both Diploma and Bachelor's degree students.
+- Dynamic form generation based on the selected specialization.
+- User-friendly interface with paired semester inputs.
+- Responsive design with a modern, attractive layout.
 
+## Installation
+#### Prerequisites
+- Python 3.6 or higher
+- pip (Python package installer)
 
-SPI and CGPA Calculation:
-Calculates the Semester Performance Index (SPI) for each semester.
-Computes the Cumulative Performance Index (CPI) for the overall course duration.
-Calculates the Cumulative Grade Point Average (CGPA) for the critical semesters.
-
-
-User Interaction:
-Interactive command-line interface for inputting SPI values for each semester.
-
-
-Eligibility Check:
-Determines if the student is eligible for the engineering degree based on the calculated CGPA.
-
-
-Detailed Output:
-Provides a summary of the total SPI, CPI, and CGPA for the entered semesters.
-
-How to Use:
-1) Clone the repository to your local machine :
+### Steps:
+1)Clone the repository:
 ```sh
-git clone https://github.com/PrathamChelaramani/gradeforge.git
+git clone https://github.com/your-username/gradeforge.git
 ```
-2)Navigate to the project directory : 
+
+2)Change Directory:
 ```sh
 cd gradeforge
 ```
 
-3)Run the script : 
+3)Create a Virtual Enviornment :
 ```sh
-python gradeforge.py
+python -m venv venv
 ```
 
+4)Activate the virtual Enviornment:
+```sh
+venv\Scripts\activate  #On windows
+```
 
-## Contribution <br>
-Feel free to fork this repository and contribute by submitting pull requests. For major changes, please open an issue first to discuss what you would like to change.
+5)Install the Dependencies:
+```sh
+pip install -r requirements.txt
+```
+
+6)Run the Application:
+```sh
+python app.py
+```
+
+7)Open your browser and navigate to http://127.0.0.1:5000/ to see the application in action.
+
+## Usage
+1)Select your specialization (Diploma in Engineering or Bachelors of Engineering).
+2)Enter your SPI for each semester.
+3)Click the "Calculate" button.
+4)View your total SPI, CPI, and CGPA along with an eligibility message.
+
+## Contributing
+Contributions are welcome! Please create a pull request with your changes or open an issue for any feature requests or bugs.
