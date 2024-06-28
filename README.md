@@ -16,12 +16,12 @@ Welcome to GradeForge, a web application designed to help engineering students c
 ### Steps:
 1)Clone the repository:
 ```sh
-git clone https://github.com/your-username/gradeforge.git
+git clone https://github.com/chelaramanipratham/gradeforge.git
 ```
 
 2)Change Directory:
 ```sh
-cd gradeforge
+cd src
 ```
 
 3)Create a Virtual Enviornment :
