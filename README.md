@@ -47,10 +47,10 @@ python app.py
 7)Open your browser and navigate to http://127.0.0.1:5000/ to see the application in action.
 
 ## Usage
-1)Select your specialization (Diploma in Engineering or Bachelors of Engineering).
-2)Enter your SPI for each semester.
-3)Click the "Calculate" button.
-4)View your total SPI, CPI, and CGPA along with an eligibility message.
+1)Select your specialization (Diploma in Engineering or Bachelors of Engineering).<br>
+2)Enter your SPI for each semester.<br>
+3)Click the "Calculate" button.<br>
+4)View your total SPI, CPI, and CGPA along with an eligibility message.<br>
 
 ## Contributing
 Contributions are welcome! Please create a pull request with your changes or open an issue for any feature requests or bugs.
