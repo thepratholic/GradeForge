@@ -3,7 +3,7 @@
 Welcome to GradeForge, a web application designed to help engineering students calculate their SPI, CPI, and CGPA easily. This project uses Flask for the backend and HTML, CSS, and JavaScript for the frontend.
 
 ## Features
-- Calculate SPI, CPI, and CGPA for both Diploma and Bachelor's degree students.
+- Calculate SPI, CPI, CGPA, and percentage for Diploma, Bachelor's and Master's degree students.
 - Dynamic form generation based on the selected specialization.
 - User-friendly interface with paired semester inputs.
 - Responsive design with a modern, attractive layout.
