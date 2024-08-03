@@ -14,6 +14,7 @@
             <select id="specialization" name="specialization" onchange="adjustSemesters()">
                 <option value="DE">Diploma in Engineering</option>
                 <option value="BE">Bachelors of Engineering</option>
+                <option value="ME">Masters of Engineering</option>
             </select>
             <div id="semesters">
                 <!-- Semester inputs will be dynamically generated here -->
@@ -26,6 +27,7 @@
                 <p>Your total SPI of all semesters in Engineering is: {{ results.total_spi }}</p>
                 <p>Your CPI in Engineering is: {{ results.cpi }}</p>
                 <p>Your CGPA in Engineering is: {{ results.cgpa }}</p>
+                <p>Your total percentage is: {{ results.percentage }}%</p>
                 <p>{{ 'Congratulations, you are eligible to collect your Engineering degree!!!' if eligibility else 'Sorry, You need to pass all the pending subject exams to collect your Engineering degree!!' }}</p>
             </div>
         {% endif %}
@@ -33,3 +35,4 @@
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
+
