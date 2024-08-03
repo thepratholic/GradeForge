@@ -7,7 +7,12 @@ function adjustSemesters() {
     const semestersContainer = document.getElementById('semesters');
     semestersContainer.innerHTML = '';
 
-    const numSemesters = specialization === 'BE' ? 8 : 6;
+    let numSemesters = 6;
+    if (specialization === 'BE') {
+        numSemesters = 8;
+    } else if (specialization === 'ME') {
+        numSemesters = 4;
+    }
 
     for (let i = 1; i <= numSemesters; i += 2) {
         const div = document.createElement('div');
@@ -44,3 +49,4 @@ function adjustSemesters() {
         semestersContainer.appendChild(div);
     }
 }
+
