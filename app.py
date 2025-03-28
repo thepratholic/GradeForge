@@ -1,72 +1,75 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, session
 
 app = Flask(__name__)
+app.secret_key = "YOUR_SECRET_KEY_HERE"
 
-class GradeSheet:
-    def calculate_marks(self, specialization, marks):
+class GradeCalculator:
+    def calculate(self, program, marks):
         num_semesters = len(marks)
-        total_marks = sum(marks)
-        
-        if specialization == "DE":
-            diploma_spi = total_marks
-            diploma_cpi = total_marks / 6
-            diploma_cgpa = sum(marks[2:]) / 4
+        total_spi = sum(marks)
+        cpi = total_spi / num_semesters
+        cgpa = cpi
+        percentage = (cpi / 10) * 100
+        return {
+            "total_spi": round(total_spi, 2),
+            "cpi": round(cpi, 2),
+            "cgpa": round(cgpa, 2),
+            "percentage": round(percentage, 2)
+        }
 
-            # Assuming each semester is out of 10, change if needed
-            total_percentage = (total_marks / (10 * num_semesters)) * 100
-
-            return {
-                "total_spi": diploma_spi,
-                "cpi": diploma_cpi,
-                "cgpa": diploma_cgpa,
-                "percentage": total_percentage
-            }
-
-        elif specialization == "BE":
-            degree_spi = total_marks
-            degree_cpi = total_marks / 8
-            degree_cgpa = sum(marks[2:6]) / 4
-
-            # Assuming each semester is out of 10, change if needed
-            total_percentage = (total_marks / (10 * num_semesters)) * 100
-
-            return {
-                "total_spi": degree_spi,
-                "cpi": degree_cpi,
-                "cgpa": degree_cgpa,
-                "percentage": total_percentage
-            }
-
-        elif specialization == "ME":
-            me_spi = total_marks
-            me_cpi = total_marks / 4
-            me_cgpa = total_marks / 4
-
-            # Assuming each semester is out of 10, change if needed
-            total_percentage = (total_marks / (10 * num_semesters)) * 100
-
-            return {
-                "total_spi": me_spi,
-                "cpi": me_cpi,
-                "cgpa": me_cgpa,
-                "percentage": total_percentage
-            }
-
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
+    semesters_map = {
+        "DE": 6,
+        "BE": 8,
+        "ME": 4
+    }
 
-@app.route('/calculate', methods=['POST'])
-def calculate():
-    specialization = request.form['specialization']
-    num_semesters = 6 if specialization == 'DE' else 8 if specialization == 'BE' else 4
-    marks = [float(request.form[f'sem_{i}']) for i in range(1, num_semesters + 1)]
-    gs = GradeSheet()
-    results = gs.calculate_marks(specialization, marks)
-    eligibility = results['cgpa'] >= 5.5
+    if request.method == 'POST':
+        program = request.form.get('program', 'DE')
+        
+        # Determine number of semesters
+        if program == 'GEN':
+            try:
+                num_semesters = int(request.form.get('num_semesters', '0'))
+                if num_semesters <= 0:
+                    raise ValueError
+            except ValueError:
+                session['error'] = "Please enter a valid number of semesters for Generic program."
+                return redirect(url_for('index'))
+        else:
+            num_semesters = semesters_map.get(program, 6)
+        
+        # Validate and parse semester marks
+        marks = []
+        for i in range(1, num_semesters + 1):
+            field_name = f'sem_{i}'
+            sem_val_str = request.form.get(field_name, '').strip()
+            if not sem_val_str:
+                session['error'] = "All semester marks must be filled in."
+                return redirect(url_for('index'))
+            try:
+                sem_val = float(sem_val_str)
+            except ValueError:
+                session['error'] = "Please enter valid numeric SPI values for all semesters."
+                return redirect(url_for('index'))
+            marks.append(sem_val)
 
-    return render_template('index.html', results=results, eligibility=eligibility)
+        # Calculate
+        calc = GradeCalculator()
+        results = calc.calculate(program, marks)
+        eligibility = results['cgpa'] >= 5.5
+
+        # Store in session, then redirect
+        session['results'] = results
+        session['eligibility'] = eligibility
+        return redirect(url_for('index'))
+
+    # GET request: retrieve data from session, then pop it out
+    results = session.pop('results', None)
+    eligibility = session.pop('eligibility', None)
+    error = session.pop('error', None)
+    return render_template('index.html', results=results, eligibility=eligibility, error=error)
 
 if __name__ == "__main__":
     app.run(debug=True)
-

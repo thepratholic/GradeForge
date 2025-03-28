@@ -1,38 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GradeForge</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    <div class="container">
-        <h1>Welcome to GradeForge</h1>
-        <form action="/calculate" method="post">
-            <label for="specialization">Specialization:</label>
-            <select id="specialization" name="specialization" onchange="adjustSemesters()">
-                <option value="DE">Diploma in Engineering</option>
-                <option value="BE">Bachelors of Engineering</option>
-                <option value="ME">Masters of Engineering</option>
-            </select>
-            <div id="semesters">
-                <!-- Semester inputs will be dynamically generated here -->
-            </div>
-            <button type="submit">Calculate</button>
-        </form>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GradeForge - Grade Calculator</title>
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-        {% if results %}
-            <div class="results">
-                <p>Your total SPI of all semesters in Engineering is: {{ results.total_spi }}</p>
-                <p>Your CPI in Engineering is: {{ results.cpi }}</p>
-                <p>Your CGPA in Engineering is: {{ results.cgpa }}</p>
-                <p>Your total percentage is: {{ results.percentage }}%</p>
-                <p>{{ 'Congratulations, you are eligible to collect your Engineering degree!!!' if eligibility else 'Sorry, You need to pass all the pending subject exams to collect your Engineering degree!!' }}</p>
-            </div>
-        {% endif %}
+  <!-- Optional custom font -->
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,500,600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+</head>
+
+<!-- Changed the body background gradient to a dark theme -->
+<body class="min-h-screen bg-gradient-to-tr from-gray-900 via-gray-800 to-black flex items-center justify-center p-4 relative">
+
+  <!-- Main Container -->
+  <div class="max-w-4xl w-full bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-8 animate-fadeIn" id="mainContainer">
+    
+    <!-- Header / Title -->
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-3xl sm:text-4xl font-bold text-white">GradeForge</h1>
+        <p class="text-white/90 mt-1">Calculate your SPI, CPI, CGPA, and Percentage with style!</p>
+      </div>
+      <!-- Help Button (top-right corner) -->
+      <button
+        id="infoBtn"
+        class="bg-white/20 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-white/30 transition duration-300"
+        title="Help / How it works?"
+      >
+        <span class="font-bold text-xl">?</span>
+      </button>
     </div>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    
+    <!-- Info Note (hidden by default) -->
+    <div
+      id="infoNote"
+      class="hidden bg-white/80 border border-gray-200 rounded shadow-md p-4 w-full sm:w-1/2 text-sm text-gray-700 mb-6 transition-all"
+    >
+      <p>
+        <strong>Note:</strong> This system currently works only for <em>absolute grading</em>.
+        It calculates your Total SPI as the sum of all semester SPI scores, then computes the CPI
+        as the average of these scores. The CGPA is considered equivalent to the CPI, and the
+        percentage is derived using <em>(CPI / 10) × 100</em> (assuming SPI is out of 10). If your
+        university uses a relative grading system, then you are at wrong place.
+      </p>
+    </div>
+    
+    <!-- Error Alert (if any) -->
+    {% if error %}
+      <div class="bg-red-100 border border-red-300 text-red-800 py-2 px-4 rounded mb-4 text-center hover:shadow-lg transition-all">
+        {{ error }}
+      </div>
+    {% endif %}
+    
+    <!-- Form -->
+    <form action="/" method="post" id="gradeForm" class="space-y-6 bg-white/20 backdrop-blur-sm rounded-xl p-6">
+      <!-- Program Selection -->
+      <div class="flex flex-col space-y-2">
+        <label for="program" class="text-white font-medium">Select Program:</label>
+        <select 
+          id="program" 
+          name="program" 
+          class="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-indigo-500 hover:shadow-md transition-all"
+          onchange="adjustForm()"
+        >
+          <option value="DE">Diploma in Engineering</option>
+          <option value="BE">Bachelor’s of Engineering</option>
+          <option value="ME">Master’s of Engineering</option>
+          <option value="GEN">Generic (Custom)</option>
+        </select>
+      </div>
+      
+      <!-- Generic Program Semesters -->
+      <div id="genericSemesters" class="hidden flex flex-col space-y-2">
+        <label for="num_semesters" class="text-white font-medium">Enter Number of Semesters:</label>
+        <input 
+          type="number" 
+          id="num_semesters" 
+          name="num_semesters" 
+          min="1" 
+          placeholder="e.g., 6"
+          class="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-indigo-500 hover:shadow-md transition-all"
+        >
+      </div>
+      
+      <!-- Semester Inputs -->
+      <div id="semesters" class="space-y-4">
+        <!-- Dynamically generated by script.js -->
+      </div>
+      
+      <!-- Submit Button -->
+      <button 
+        type="submit"
+        class="w-full py-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 hover:shadow-lg transition-all"
+      >
+        Calculate Grades
+      </button>
+    </form>
+    
+    <!-- Results (only if 'results' was in session) -->
+    {% if results %}
+      <div class="mt-8 bg-white/20 backdrop-blur-sm rounded-xl p-6 border-l-4 border-indigo-500 hover:shadow-lg transition-all">
+        <h2 class="text-2xl font-bold text-white mb-4">Results</h2>
+        <p class="text-lg text-white">
+          <span class="font-semibold">Total SPI:</span> {{ results.total_spi }}
+        </p>
+        <p class="text-lg text-white">
+          <span class="font-semibold">CPI:</span> {{ results.cpi }}
+        </p>
+        <p class="text-lg text-white">
+          <span class="font-semibold">CGPA:</span> {{ results.cgpa }}
+        </p>
+        <p class="text-lg text-white">
+          <span class="font-semibold">Percentage:</span> {{ results.percentage }}%
+        </p>
+        <p class="mt-4 text-xl font-medium text-indigo-200">
+          {% if eligibility %}
+            Congratulations, you are eligible to collect your degree!
+          {% else %}
+            Unfortunately, you have pending requirements.
+          {% endif %}
+        </p>
+      </div>
+    {% endif %}
+  </div>
+  
+  <!-- JS for the Help button and dynamic form -->
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  <script>
+    // Fade in the container on DOMContentLoaded
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById('mainContainer').classList.add('show');
+    });
+    
+    // Toggle the info note on Help button click
+    document.getElementById('infoBtn').addEventListener('click', () => {
+      const infoNote = document.getElementById('infoNote');
+      infoNote.classList.toggle('hidden');
+    });
+  </script>
 </body>
 </html>
-
